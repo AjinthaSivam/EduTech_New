@@ -1,7 +1,5 @@
 # EduTech_New
 
-# EduTech
-
 ## Project Setup
 
 ### Clone the Repository
