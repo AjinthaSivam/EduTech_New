@@ -1,25 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
-import { FiSend } from "react-icons/fi";
 import { MdOutlineKeyboardVoice } from "react-icons/md";
 import { MdKeyboardVoice } from "react-icons/md";
 import { MdArrowUpward } from "react-icons/md";
-import { LuPenSquare } from "react-icons/lu";
-import { SlOptionsVertical } from "react-icons/sl";
-import { CiEraser } from "react-icons/ci";
+import { FaEraser } from "react-icons/fa";
 import { CgSearch } from "react-icons/cg";
 import '../styles/custom.css'
 import { marked } from 'marked'
-import parse from 'html-react-parser';
+import BotLogo from '../images/bot.png'
 
 const Chat = () => {
-    const [messages, setMessages] = useState([
-        // {   sender: 'bot', 
-        //     text: `Hey ${localStorage.getItem('username')}! 😊🌟\n\nReady to embark on an exciting journey of learning English? 📚✨\n\nHow can I assist you today?`,
-        //     time: new Date()
-        // }
-    ])
-
+    const [messages, setMessages] = useState([])
     const [input, setInput] = useState('')
     const [listening, setListening] = useState(false);
     const [recognition, setRecognition] = useState(null);
@@ -28,7 +19,7 @@ const Chat = () => {
     useEffect(() => {
         const initialBotMessage = {
             sender: 'bot', 
-            text: `Hey ${localStorage.getItem('username')}! 😊🌟\n\nReady to embark on an exciting journey of learning English? 📚✨\n\nHow can I assist you today?`,
+            text: `Hey ${localStorage.getItem('username')}! 😊🌟\n\nWelcome to EduTech Teaching Assistant! \n\n`,
             time: new Date()
         }
         setMessages([initialBotMessage])
@@ -56,19 +47,6 @@ const Chat = () => {
         }
         getChatHistory();
     }, []);
-
-    useEffect(() => {
-        setTimeout(() => {
-            scrollToBottom();
-        }, 100);
-    }, [messages]);
-
-    const scrollToBottom = () => {
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-        }
-    };
-
     
 
     const startVoiceRecognition = () => {
@@ -90,9 +68,6 @@ const Chat = () => {
                     'Authorization': `Bearer ${localStorage.getItem('access')}`
                 }
             })
-
-            console.log(response.data)
-
             if (response && response.data) {
                 const previousMessages = response.data.flatMap(chat => chat.history.flatMap(entry => ([
                     { sender: 'user', text: entry.message, time: new Date(entry.timestamp) },
@@ -110,6 +85,7 @@ const Chat = () => {
             console.error('Error fetching chat history:', error)
         }
     }
+    
 
     const sendMessage = async (message) => {
         if (message.trim()) {
@@ -120,7 +96,6 @@ const Chat = () => {
             try {
                 const response = await axios.post('http://127.0.0.1:8000/chat/', {
                     user_input: message,
-                    // new_chat: false
                 }, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('access')}`
@@ -144,31 +119,13 @@ const Chat = () => {
         }
     };
 
-    const createNewChat = async () => {
-        try {
-            const endResponse = await axios.post(
-                'http://127.0.0.1:8000/api/end_conversation/', {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('access')}`
-                    }
-                }
-            )
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages])
 
-            if (endResponse && endResponse.data && endResponse.data.success) {
-                const initialBotMessage = {
-                    sender: 'bot',
-                    text: 'Welcom Back!',
-                    time: new Date()
-                }
-                setMessages([initialBotMessage])
-            } else {
-                console.error('Failed to end the current chat:', endResponse);
-                // Handle invalid response format here
-            }
-        } catch (error) {
-            console.error('Error ending the current chat:', error);
-            // Handle network errors or other exceptions here
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
         }
     }
 
@@ -177,38 +134,29 @@ const Chat = () => {
     }
 
     const formatBotResponse = (response) => {
-        // const formattedResponse = response.replace(/\n/g, '<br/>')
-        //     .replace(/a\)/g, '<br/><strong>a)</strong>')
-        //     .replace(/b\)/g, '<br/><strong>b)</strong>')
-        //     .replace(/c\)/g, '<br/><strong>c)</strong>')
-        
-        // return formattedResponse
-
         return marked(response)
     }
 
   return (
     
-    <div className='flex flex-col h-full p-4 w-full max-w-4xl mx-auto'>
+    <div className='flex flex-col h-full p-6 w-full max-w-5xl mx-auto'>
         <div className='flex justify-end'>
-            {/* <button onClick={createNewChat} className='p-2 mt-4 ml-3 text-[#04bdb4] hover:rounded-full hover:bg-[#e6fbfa]'>
-                <LuPenSquare size={25} />
-            </button> */}
-            <button className='p-2 mt-4 ml-3 text-[#04bdb4] hover:rounded-full hover:bg-[#e6fbfa]'>
-                <SlOptionsVertical size={20} />
-            </button>
-
         </div>
         
-        <div className='flex-grow overflow-auto mt-8 mb-4 px-3 overflow-y-scroll scrollbar-hidden'>
+        <div className='flex-grow overflow-auto mt-8 mb-4 px-3' ref={chatContainerRef}>
             {
                 messages.map((message, index) => (
-                    <div key={index} className={`flex mb-2 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-xs p-2 rounded-lg ${message.sender === 'user' ? 'bg-[#04aaa2] text-[#fbfafb]' : 'bg-[#e6fbfa] text-[#2d3137]'}`}>
+                    <div key={index} className={`flex mt-4 mb-4 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`relative max-w-3xl p-4 rounded-lg ${message.sender === 'user' ? 'bg-[#04aaa2] text-[#fbfafb]' : 'bg-[#e6fbfa] text-[#2d3137]'}`}>
+                            {
+                                message.sender === 'bot' && (
+                                    <img src={BotLogo} alt="Bot Logo" className="absolute left-2 -top-5 h-8 w-8" />
+                                )
+                            }
                             {message.sender === 'bot' ? (<div className='whitespace-pre-line' dangerouslySetInnerHTML={{__html: message.text}}/>) : (message.text)}
-                            
+                            <p className={`absolute bottom-1 right-2 text-xs ${message.sender === 'user' ? 'text-gray-300' : 'text-gray-500'}`}>{formatTime(message.time)}</p>
                         </div>
-                        <p className='text-xs text-gray-500 ml-2 self-end'>{formatTime(message.time)}</p>
+                        
 
                     </div>
                 ))
@@ -232,11 +180,6 @@ const Chat = () => {
             </button>
 
         </div>
-        {/* Custom scrollbar div */}
-        {/* <div className="chat-scrollbar"> */}
-                {/* &nbsp; */}
-            {/* </div> */}
-
     </div>
   )
 }

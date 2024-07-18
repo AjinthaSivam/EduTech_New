@@ -25,8 +25,8 @@ const NavBar = () => {
   };
 
   const menuItems = [
-    { name: 'Profile', icon: <FaRegCircleUser size={20} /> },
-    { name: 'Settings', icon: <TbSettings size={20} /> },
+    // { name: 'Profile', icon: <FaRegCircleUser size={20} /> },
+    // { name: 'Settings', icon: <TbSettings size={20} /> },
     { name: 'Log Out', icon: <MdOutlineLogout size={20} />, action: handleLogout },
   ];
 
