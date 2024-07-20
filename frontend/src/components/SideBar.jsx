@@ -1,28 +1,19 @@
 import React, { useState } from 'react'
 import { HiMenuAlt3 } from 'react-icons/hi'
-import { RiChatHistoryLine } from "react-icons/ri";
 import { GrResources } from "react-icons/gr";
 import { MdOutlineQuiz } from "react-icons/md";
-import { RiProgress3Line } from "react-icons/ri";
-import { MdOutlineLogout } from "react-icons/md";
 import { MdOutlineChatBubbleOutline } from "react-icons/md";
-// import { LuPenSquare } from "react-icons/lu";
-import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 
 const SideBar = ({ setSelectedComponent, setSelectedQuizDifficulty }) => {
     const menus = [
         {name:"Chat Bot", key: 'chatbot', icon:MdOutlineChatBubbleOutline},
-        // {name:"New Chat", link:"/", icon:LuPenSquare},
         {name:"Past Papers", key: 'pastpapers', icon:GrResources},
         {name:"Quiz", key: 'quiz', icon:MdOutlineQuiz, submenu: [
             { name: 'Easy', key: 'easy' },
             { name: 'Medium', key: 'medium' },
             { name: 'Hard', key: 'hard' },
         ]},
-        // {name:"Progress", key: 'progress', icon:RiProgress3Line},    
-        // {name:"Log Out", key: 'logout', icon:MdOutlineLogout, margin:true},
     ]
 
     const [open, setOpen] = useState(false)
@@ -82,7 +73,6 @@ const SideBar = ({ setSelectedComponent, setSelectedQuizDifficulty }) => {
                                                     onClick={() => handleSubmenuClick(submenu)}
                                                     className='flex items-center gap-3.5 font-medium p-2 hover:bg-[#b4f2ef] rounded-md cursor-pointer'
                                                     >
-                                                        {/* <div className='w-3 h-3 bg-[#2d3137] rounded-full'></div> */}
                                                         <h2 className='whitespace-pre'>{submenu.name}</h2>
 
                                                     </div>
@@ -91,19 +81,13 @@ const SideBar = ({ setSelectedComponent, setSelectedQuizDifficulty }) => {
                                         </div>
                                     )
                                 }
-                        {/* {menu.name === "Chat History" && Array.isArray(chatTitles) && chatTitles.length > 0 && (
-                            <div className="ml-4 mt-2">
-                                {chatTitles.map((chat, index) => (
-                                    <p key={index} className='text-sm text-gray-700 cursor-pointer p-3'>{chat.chat_title}</p>
-                                ))}
-                            </div>
-                        )} */}
+                        
                         </div>
                         ))
                     }
 
                 </div>
-                
+            
             </div>
             
         
