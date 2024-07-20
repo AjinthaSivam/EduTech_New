@@ -67,7 +67,7 @@ const MCQGenerator = ({ difficulty, setSelectedComponent }) => {
     const calculateScore = () => {
         let correctAnswers = 0;
         questions.forEach((question, index) => {
-            const correctAnswer = question.answer.split(') ')[1];
+            const correctAnswer = question.answer.trim();
             if (userAnswers[index] === correctAnswer) {
                 correctAnswers++;
             }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const QuizResult = ({ questions, userAnswers, score, setSelectedComponent }) => {
     const getFeedback = (score) => {
@@ -19,39 +19,36 @@ const QuizResult = ({ questions, userAnswers, score, setSelectedComponent }) => 
         setSelectedComponent('chatbot');
     };
 
-  return (
-    <div className='flex-col h-full p-4 w-full max-w-5xl mx-auto flex-grow mb-4'>
-        <div className='p-6 border-b'>
-            <p className='text-md font-semibold text-[#04aaa2] mb-3'>Your Score is {score.toFixed(2)}%</p>
-            <p className='text-md font-semibold text-[#5f1e5c]'>{getFeedback(score)}</p>
-        </div>
-        <div>
-            {
-                questions.map((question, index) => (
+    return (
+        <div className='flex-col h-full p-4 w-full max-w-5xl mx-auto flex-grow mb-4'>
+            <div className='p-6 border-b'>
+                <p className='text-md font-semibold text-[#04aaa2] mb-3'>Your Score is {score.toFixed(2)}%</p>
+                <p className='text-md font-semibold text-[#5f1e5c]'>{getFeedback(score)}</p>
+            </div>
+            <div>
+                {questions.map((question, index) => (
                     <div key={index} className='mb-6 mt-6'>
                         <p>{index + 1}. {question.question}</p>
                         <div className='ml-4 mt-2'>
                             {Object.keys(question.options).map((key, idx) => (
-                                <p key={idx} className={`block mb-3 ml-5 ${question.answer.split(') ')[1] === question.options[key] ? 'text-green-500' : ''}`}>
-                                    {question.options[key]} {userAnswers[index] === question.options[key] && userAnswers[index] !== question.answer.split(') ')[1] && <span className='text-red-500'>(Your Answer)</span>}
+                                <p key={idx} className={`block mb-3 ml-5 ${question.options[key] === question.answer ? 'text-green-500' : ''}`}>
+                                    {question.options[key]} {userAnswers[index] === question.options[key] && userAnswers[index] !== question.answer && <span className='text-red-500'>(Your Answer)</span>}
                                 </p>
                             ))}
                         </div>
                     </div>
-                ))
-            }
+                ))}
+            </div>
+            <div className='mt-4 flex justify-center'>
+                <button
+                    className='bg-[#04aaa2] text-white py-2 px-4 rounded-full'
+                    onClick={handleFinishReview}
+                >
+                    Finish Review
+                </button>
+            </div>
         </div>
-        <div className='mt-4 flex justify-center'>
-            <button
-                className='bg-[#04aaa2] text-white py-2 px-4 rounded-full'
-                onClick={handleFinishReview}
-            >
-                Finish Review
-            </button>
-        </div>
+    );
+};
 
-    </div>
-  )
-}
-
-export default QuizResult
+export default QuizResult;
