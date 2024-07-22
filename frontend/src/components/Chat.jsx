@@ -15,6 +15,7 @@ const Chat = () => {
     const [listening, setListening] = useState(false);
     const [recognition, setRecognition] = useState(null);
     const chatContainerRef = useRef(null);
+    const [chatId, setChatId] = useState(null);
 
     useEffect(() => {
         const initialBotMessage = {
@@ -45,7 +46,7 @@ const Chat = () => {
         } else {
             console.warn('Webkit Speech Recognition is not supported in this browser.');
         }
-        getChatHistory();
+        // getChatHistory();
     }, []);
     
 
@@ -61,30 +62,34 @@ const Chat = () => {
         }
     };
 
-    const getChatHistory = async() => {
+    const getChatHistory = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/chat/history', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('access')}`
                 }
-            })
+            });
+    
             if (response && response.data) {
+                // console.log('Chat history response:', response.data);
+    
                 const previousMessages = response.data.flatMap(chat => chat.history.flatMap(entry => ([
-                    { sender: 'user', text: entry.message, time: new Date(entry.timestamp) },
-                    { sender: 'bot', text: entry.response, time: new Date(entry.timestamp) }
-                ])))
+                    { sender: 'user', text: chat.message, time: new Date(entry.timestamp) },
+                    { sender: 'bot', text: chat.response, time: new Date(entry.timestamp) }
+                ])));
+                
                 setMessages(prevMessages => [
-                    prevMessages[0],
+                    prevMessages[0], // Keeping the initial bot message
                     ...previousMessages
-                ])
+                ]);
             } else {
-                console.error('Invalid response format:', response)
+                console.error('Invalid response format:', response);
             }
-
+    
         } catch (error) {
-            console.error('Error fetching chat history:', error)
+            console.error('Error fetching chat history:', error);
         }
-    }
+    };
     
 
     const sendMessage = async (message) => {
@@ -94,27 +99,30 @@ const Chat = () => {
             setInput('');
 
             try {
-                const response = await axios.post('http://127.0.0.1:8000/chat/', {
+                const response = await axios.post('http://127.0.0.1:8000/api/chat/', {
                     user_input: message,
+                    new_chat: chatId === null,
+                    chat_id: chatId
                 }, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('access')}`
                     }
                 });
-                
+
                 if (response && response.data && response.data.response) {
                     const botResponse = response.data.response;
-                    
 
                     const botMessage = { sender: 'bot', text: formatBotResponse(botResponse), time: new Date() };
                     setMessages(prevMessages => [...prevMessages, botMessage]);
+
+                    if (chatId === null) {
+                        setChatId(response.data.chat_id);
+                    }
                 } else {
                     console.error('Invalid response format:', response);
-                    // Handle invalid response format here
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
-                // Handle network errors or other exceptions here
             }
         }
     };
