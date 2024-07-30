@@ -19,12 +19,25 @@ const Signup = () => {
     password: '',
   })
 
+  const [errors, setErrors] = useState({
+    email: '',
+    username: '',
+    password: '',
+    general: '',
+  })
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value})
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setErrors({
+      email: '',
+      username: '',
+      password: '',
+      general: '',
+    })
 
     try {
       console.log('Form Data:', formData);
@@ -34,7 +47,19 @@ const Signup = () => {
       // localStorage.setItem('user', JSON.stringify(response.data.user))
       navigate('/signin')
     } catch (error) {
-      console.error('There was an error registering the user!', error)
+      console.error('There was an error registering the user!', error.response.data)
+      const errorData = error.response.data
+      if (errorData) {
+        setErrors({
+          email: errorData.email ? errorData.email[0] : '',
+          username: errorData.username ? errorData.username[0] : '',
+          password: errorData.password ? errorData.password[0] : '',
+          general: errorData.detail || 'There was an error regestering the user!'
+        })
+      }
+      else {
+        setErrors({ ...errors, general: 'There was an error registering the user!' })
+      }
     }
   }
 
@@ -90,6 +115,7 @@ const Signup = () => {
                 value={formData.email}
                 onChange={handleChange}
               />
+              {errors.email && <span className='text-xs text-red-500'>{errors.email}</span>}
               {/* <div className='grid grid-cols-2 items-center gap-4'>
               <input
                 type='text'
@@ -132,6 +158,7 @@ const Signup = () => {
                 value={formData.username}
                 onChange={handleChange}
               />
+              {errors.username && <span className='text-xs text-red-500'>{errors.username}</span>}
               <div className='relative'>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -150,7 +177,10 @@ const Signup = () => {
                   }
                 </div>
               </div>
+              {errors.password && <span className='text-xs text-red-500'>{errors.password}</span>}
               <button type='submit' className='bg-[#04aaa2] rounded-xl text-white py-2 mt-4 mb-4 hover:scale-105 duration-300'>Sign Up</button>
+
+              {errors.general && <span className='text-xs text-red-500'>{errors.general}</span>}
 
             </form>
             <div className='mt-3 text-[#04aaa2] text-xs flex justify-between border-t pt-2 items-center gap-2'>

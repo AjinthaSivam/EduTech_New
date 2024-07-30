@@ -7,13 +7,15 @@ import { useAuth } from '../AuthContext';
 
 const Signin = () => {
     const navigate = useNavigate();
-    const { login } = useAuth()
+    const { login } = useAuth();
 
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     });
+
+    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,16 +27,15 @@ const Signin = () => {
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/login/', {
                 username_or_email: formData.username,
-                password: formData.password});
-            login(response.data, response.data.user.username)
+                password: formData.password
+            });
+            login(response.data, response.data.user.username);
             navigate('/home');
         } catch (error) {
             if (error.response && error.response.status === 401) {
-                console.error('Incorrect username or password');
-                // Handle incorrect credentials scenario here, show an error message to the user
+                setError('Incorrect username or password');
             } else {
-                console.error('Error signing in:', error);
-                // Handle other errors, such as network issues or server errors
+                setError('Error signing in. Please try again later.');
             }
         }
     };
@@ -80,6 +81,7 @@ const Signin = () => {
                                 )}
                             </div>
                         </div>
+                        {error && <span className="text-xs text-red-500">{error}</span>}
                         <button type="submit" className="bg-[#04aaa2] rounded-xl text-white py-2 hover:scale-105 duration-300">
                             Sign In
                         </button>

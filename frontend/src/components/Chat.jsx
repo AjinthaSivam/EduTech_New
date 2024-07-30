@@ -170,24 +170,30 @@ const Chat = () => {
                 ))
             }
         </div>
-        <div className='flex px-3'>
-            <button onClick={listening? stopVoiceRecognition : startVoiceRecognition} className='p-2 text-[#04aaa2] rounded-full mr-2 hover:bg-[#e6fbfa]'>
-                {listening? <MdKeyboardVoice size={30}/> : <MdOutlineKeyboardVoice size={25}/>}
-            </button>
-            <input 
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className='flex-grow p-2 pl-4 border rounded-full focus:outline-none' 
-                placeholder='Type your message...'
-            />
-            
-            <button onClick={handleSend} className='p-2 bg-[#04aaa2] text-[#fbfafb] rounded-full ml-2 hover:bg-[#04bdb4]'>
-                <MdArrowUpward size={25}/>
-            </button>
-
-        </div>
+        <div className='flex px-3 items-end'>
+    <button onClick={listening ? stopVoiceRecognition : startVoiceRecognition} className='p-2 text-[#04aaa2] rounded-full mr-2 hover:bg-[#e6fbfa] w-10 h-10 flex-shrink-0'>
+        {listening ? <MdKeyboardVoice size={30}/> : <MdOutlineKeyboardVoice size={25}/>}
+    </button>
+    <textarea 
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Prevent newline from being added
+                handleSend();
+            }
+        }}
+        className='flex-grow p-2 pl-4 border rounded-xl focus:outline-none resize-none'
+        placeholder='Type your message...'
+        rows={1}
+        onInput={(e) => {
+            e.target.rows = Math.min(5, e.target.value.split('\n').length) || 1;
+        }}
+    />
+    <button onClick={handleSend} className='p-2 bg-[#04aaa2] text-[#fbfafb] rounded-full ml-2 hover:bg-[#04bdb4] w-10 h-10 flex-shrink-0'>
+        <MdArrowUpward size={25}/>
+    </button>
+</div>
     </div>
   )
 }
